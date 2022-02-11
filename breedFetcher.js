@@ -1,32 +1,37 @@
 
 const request = require('request');
+// const { calculateMac } = require('request/lib/hawk');
 //const fs = require('fs');
 
-let catbreed = process.argv[2];
-//console.log(catbreed);
-
-let urll = `https://api.thecatapi.com/v1/breeds/search?q=${catbreed}`;
+//let catbreed = process.argv[2];
+// //console.log(catbreed);
 
 
+const fetchBreedDescription = function (catbreed, callback) {
 
-request(urll, function(error, response, body) {
+  let urll = `https://api.thecatapi.com/v1/breeds/search?q=${catbreed}`;
+
+
+  request(urll, function (error, response, body) {    
+
+    if (error) {
+      callback(error)
+    } 
+     
+    const data = JSON.parse(body);
     
-  if (error) {
-    console.error(`No information for ${catbreed}`);
-    //console.log('the body of the url: ', body)
-    //console.log('type of body: ', typeof(body));
-  }
+    let breed = data[0];
 
-  const data = JSON.parse(body);
-  //console.log(data);
-  //console.log(typeof data);
+    if (breed) {
+      callback(null, breed.description)
+    } else {
+      callback("breed not found")
+    }
 
-  let description;
-  description = data[0]["description"];
-  console.log(`description of ${catbreed}:  `, description);
+    
+  });
 
- 
-});
+  
+};
 
-
-
+module.exports = { fetchBreedDescription };
